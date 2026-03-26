@@ -1,6 +1,10 @@
+import { Runtime } from 'aws-cdk-lib/aws-lambda';
+import { NodejsFunction } from 'aws-cdk-lib/aws-lambda-nodejs';
 import { Bucket } from 'aws-cdk-lib/aws-s3';
 import * as cdk from 'aws-cdk-lib/core';
+import { PATH_METADATA_ENABLE_CONTEXT } from 'aws-cdk-lib/cx-api';
 import { Construct } from 'constructs';
+import * as path from 'path';
 // import * as sqs from 'aws-cdk-lib/aws-sqs';
 
 export class AwsSandboxStack extends cdk.Stack {
@@ -17,6 +21,11 @@ export class AwsSandboxStack extends cdk.Stack {
     const testBucket = new Bucket(this, 'testing-bucket', {
       versioned: true,
       bucketName: "testing-bucket-23129382929abc"
+    })
+
+    const helloLambda = new NodejsFunction(this, 'helloLambda', {
+      entry: path.join(__dirname, "../src/backend/hello.ts"),
+      runtime: Runtime.NODEJS_20_X
     })
   }
 }
