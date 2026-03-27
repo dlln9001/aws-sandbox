@@ -1,3 +1,4 @@
+import { Cors, LambdaIntegration, RestApi } from 'aws-cdk-lib/aws-apigateway';
 import { Runtime } from 'aws-cdk-lib/aws-lambda';
 import { NodejsFunction } from 'aws-cdk-lib/aws-lambda-nodejs';
 import { Bucket } from 'aws-cdk-lib/aws-s3';
@@ -27,5 +28,18 @@ export class AwsSandboxStack extends cdk.Stack {
       entry: path.join(__dirname, "../src/backend/hello.ts"),
       runtime: Runtime.NODEJS_20_X
     })
+
+    const api = new RestApi(this, 'MyRestApi', {
+      restApiName: 'My service',
+      description: 'testing api gateway',
+      defaultCorsPreflightOptions: {
+        allowOrigins: Cors.ALL_ORIGINS,
+        allowMethods: Cors.ALL_METHODS
+      }
+    })
+
+    const pingEndpoint = api.root.addResource('ping')
+    pingEndpoint.addMethod('GET', new LambdaIntegration(helloLambda))
+
   }
 }
