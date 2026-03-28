@@ -31,7 +31,7 @@ export class AwsSandboxStack extends cdk.Stack {
     })
 
     const table = new dynamodb.Table(this, 'myTable', {
-            partitionKey: { name: 'pk', type: dynamodb.AttributeType.NUMBER },
+            partitionKey: { name: 'pk', type: dynamodb.AttributeType.STRING },
             removalPolicy: cdk.RemovalPolicy.DESTROY
     })
 
