@@ -35,6 +35,17 @@ export class AwsSandboxStack extends cdk.Stack {
             removalPolicy: cdk.RemovalPolicy.DESTROY
     })
 
+    // Create the Lambda Function
+    const createDataFn = new NodejsFunction(this, 'CreateTestDataFunction', {
+      entry: path.join(__dirname, '../src/backend/test-data/create-test-data.ts'),
+      handler: 'handler',
+      environment: {
+        // We pass the table name to the Lambda so it knows where to write
+        TABLE_NAME: table.tableName,
+      },
+    });
+
+
     const api = new RestApi(this, 'MyRestApi', {
       restApiName: 'My service',
       description: 'testing api gateway',
@@ -46,6 +57,11 @@ export class AwsSandboxStack extends cdk.Stack {
 
     const pingEndpoint = api.root.addResource('ping')
     pingEndpoint.addMethod('GET', new LambdaIntegration(helloLambda))
+
+    const createTestDataEndpoint = api.root.addResource('test-data')
+    createTestDataEndpoint.addMethod('POST', new LambdaIntegration(createDataFn))
+
+    table.grantReadWriteData(createDataFn)
 
   }
 }
