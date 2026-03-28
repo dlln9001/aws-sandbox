@@ -7,6 +7,7 @@ import { PATH_METADATA_ENABLE_CONTEXT } from 'aws-cdk-lib/cx-api';
 import { Construct } from 'constructs';
 import * as path from 'path';
 // import * as sqs from 'aws-cdk-lib/aws-sqs';
+import * as dynamodb from 'aws-cdk-lib/aws-dynamodb'
 
 export class AwsSandboxStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
@@ -27,6 +28,11 @@ export class AwsSandboxStack extends cdk.Stack {
     const helloLambda = new NodejsFunction(this, 'helloLambda', {
       entry: path.join(__dirname, "../src/backend/hello.ts"),
       runtime: Runtime.NODEJS_20_X
+    })
+
+    const table = new dynamodb.Table(this, 'myTable', {
+            partitionKey: { name: 'pk', type: dynamodb.AttributeType.NUMBER },
+            removalPolicy: cdk.RemovalPolicy.DESTROY
     })
 
     const api = new RestApi(this, 'MyRestApi', {
